@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Programme">
+<title>Programme Sport</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --card: #111118;
+  --card2: #16161f;
+  --border: #ffffff0f;
+  --force: #ff5533;
+  --force-bg: #ff553318;
+  --hyp: #3b9eff;
+  --hyp-bg: #3b9eff18;
+  --iso: #a855f7;
+  --iso-bg: #a855f718;
+  --gold: #f5c842;
+  --white: #f0f0f5;
+  --muted: #666680;
+  --push-accent: #ff6b35;
+  --pull-accent: #3b9eff;
+  --legs-accent: #22dd88;
+  --upper-accent: #a855f7;
+  --rest-accent: #44445a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); color: var(--white); font-family: 'Barlow', sans-serif; min-height: 100vh; overscroll-behavior: none; }
+
+/* HEADER */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: #0a0a0fdd;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px 10px;
+}
+.app-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+.app-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 1px; }
+
+/* TABS */
+.tabs {
+  display: flex; gap: 6px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab.active { color: var(--bg); background: var(--white); border-color: var(--white); }
+
+/* PAGES */
+.page { display: none; padding: 0 0 100px; }
+.page.active { display: block; }
+
+/* DAY SELECTOR */
+.day-nav {
+  display: flex; gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.day-nav::-webkit-scrollbar { display: none; }
+.day-btn {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 10px; border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer; transition: all 0.2s;
+  min-width: 52px;
+}
+.day-btn .day-short { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; }
+.day-btn .day-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 4px; background: var(--muted); }
+.day-btn.active { background: var(--card2); border-color: var(--white); }
+.day-btn.push.active .day-dot { background: var(--push-accent); }
+.day-btn.pull.active .day-dot { background: var(--pull-accent); }
+.day-btn.legs.active .day-dot { background: var(--legs-accent); }
+.day-btn.upper.active .day-dot { background: var(--upper-accent); }
+.day-btn.rest.active .day-dot { background: var(--rest-accent); }
+
+/* DAY CONTENT */
+.day-content { display: none; padding: 0 16px; }
+.day-content.active { display: block; }
+
+.day-header-card {
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.day-header-card .day-name-big { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; }
+.day-header-card .day-type-big { font-size: 13px; font-weight: 500; opacity: 0.8; margin-top: 2px; }
+.day-header-card .day-focus { font-size: 11px; opacity: 0.6; margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+.day-number-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 800; opacity: 0.15; line-height: 1; }
+
+/* EXO CARD */
+.exo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.exo-card.priority { border-color: #f5c84240; }
+.exo-top {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px 10px;
+}
+.exo-name {
+  flex: 1;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+.priority-star { color: var(--gold); font-size: 14px; flex-shrink: 0; }
+.exo-meta {
+  display: flex; gap: 8px; align-items: center;
+  padding: 0 16px 12px;
+  flex-wrap: wrap;
+}
+.badge {
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.badge.force { background: var(--force-bg); color: var(--force); }
+.badge.hyp { background: var(--hyp-bg); color: var(--hyp); }
+.badge.iso { background: var(--iso-bg); color: var(--iso); }
+.badge.series { background: #ffffff10; color: var(--white); }
+.badge.repos { background: #ffffff08; color: var(--muted); }
+.exo-note {
+  padding: 10px 16px;
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  border-top: 1px solid var(--border);
+}
+.exo-prog {
+  padding: 8px 16px;
+  font-size: 11px; color: var(--muted);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+}
+.exo-prog::before { content: "↑"; color: var(--legs-accent); font-weight: 700; }
+
+/* REST DAY */
+.rest-day {
+  margin: 0 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.rest-day .rest-icon { font-size: 40px; margin-bottom: 12px; }
+.rest-day .rest-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+.rest-day .rest-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* PROGRESSION PAGE */
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); padding: 16px 16px 8px;
+}
+.prog-card {
+  margin: 0 16px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+.prog-card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; }
+.prog-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.prog-row:last-child { margin-bottom: 0; }
+.prog-label { color: var(--muted); min-width: 80px; flex-shrink: 0; }
+.prog-val { color: var(--white); line-height: 1.4; }
+
+.priority-card {
+  margin: 0 16px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.priority-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px; font-weight: 800; line-height: 1;
+  flex-shrink: 0; opacity: 0.3;
+}
+.priority-info .priority-name { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; }
+.priority-info .priority-why { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+.priority-info .priority-sol { font-size: 12px; color: var(--legs-accent); margin-top: 6px; }
+
+/* SUIVI PAGE */
+.suivi-exo {
+  margin: 0 16px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.suivi-exo-header {
+  padding: 12px 16px 8px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.suivi-exo-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+.suivi-exo-series { font-size: 11px; color: var(--muted); }
+.suivi-weeks {
+  display: flex; gap: 6px;
+  padding: 0 16px 14px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.suivi-weeks::-webkit-scrollbar { display: none; }
+.week-input-wrap { flex-shrink: 0; text-align: center; }
+.week-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.week-input {
+  width: 44px; height: 36px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700;
+  text-align: center;
+  -webkit-appearance: none; outline: none;
+}
+.week-input:focus { border-color: var(--hyp); }
+
+.day-section-label {
+  padding: 12px 16px 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* TIMER */
+.timer-fab {
+  position: fixed; bottom: 24px; right: 20px; z-index: 200;
+  width: 60px; height: 60px;
+  border-radius: 50%; border: none;
+  background: var(--white); color: var(--bg);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  box-shadow: 0 4px 20px #00000080;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px;
+  transition: transform 0.15s;
+}
+.timer-fab:active { transform: scale(0.94); }
+.timer-fab .timer-display { font-size: 16px; font-weight: 800; line-height: 1; }
+.timer-fab .timer-label { font-size: 8px; opacity: 0.6; letter-spacing: 0.05em; }
+
+.timer-panel {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 24px 40px;
+}
+.timer-panel.open { display: block; }
+.timer-panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 16px; }
+.timer-big { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 800; text-align: center; letter-spacing: -0.02em; line-height: 1; margin-bottom: 20px; }
+.timer-big.running { color: var(--legs-accent); }
+.timer-big.done { color: var(--force); }
+.timer-presets { display: flex; gap: 8px; margin-bottom: 16px; }
+.preset-btn {
+  flex: 1; padding: 10px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+}
+.preset-btn:active { background: #ffffff20; }
+.timer-controls { display: flex; gap: 10px; }
+.timer-btn {
+  flex: 1; padding: 14px;
+  border-radius: 12px; border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  cursor: pointer;
+}
+.timer-btn.start { background: var(--white); color: var(--bg); }
+.timer-btn.reset { background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+.timer-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none;
+  color: var(--muted); font-size: 22px; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title">Programme Sport</div>
+  <div class="app-sub">Force · Hypertrophie · 5 jours</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPage('programme')">Programme</button>
+  <button class="tab" onclick="showPage('progression')">Progression</button>
+  <button class="tab" onclick="showPage('suivi')">Suivi charges</button>
+</div>
+
+<!-- PAGE PROGRAMME -->
+<div class="page active" id="page-programme">
+  <div class="day-nav">
+    <button class="day-btn push active" onclick="showDay(0)" id="daybtn-0"><span class="day-short">Lun</span><span class="day-dot"></span></button>
+    <button class="day-btn pull" onclick="showDay(1)" id="daybtn-1"><span class="day-short">Mar</span><span class="day-dot"></span></button>
+    <button class="day-btn legs" onclick="showDay(2)" id="daybtn-2"><span class="day-short">Mer</span><span class="day-dot"></span></button>
+    <button class="day-btn rest" onclick="showDay(3)" id="daybtn-3"><span class="day-short">Jeu</span><span class="day-dot"></span></button>
+    <button class="day-btn upper" onclick="showDay(4)" id="daybtn-4"><span class="day-short">Ven</span><span class="day-dot"></span></button>
+    <button class="day-btn legs" onclick="showDay(5)" id="daybtn-5"><span class="day-short">Sam</span><span class="day-dot"></span></button>
+    <button class="day-btn rest" onclick="showDay(6)" id="daybtn-6"><span class="day-short">Dim</span><span class="day-dot"></span></button>
+  </div>
+
+  <!-- LUNDI -->
+  <div class="day-content active" id="day-0">
+    <div class="day-header-card" style="background:linear-gradient(135deg,#1a0a0520,#ff6b3515);border:1px solid #ff6b3530;">
+      <div><div class="day-name-big" style="color:#ff6b35">Lundi</div><div class="day-type-big">Push</div><div class="day-focus">Pectoraux · Épaules · Triceps</div></div>
+      <div class="day-number-badge">1</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Bench press</div></div>
+      <div class="exo-meta"><span class="badge force">Force</span><span class="badge series">4×5</span><span class="badge repos">2 min repos</span></div>
+      <div class="exo-note">Épaules en rétraction, poitrine bombée, descente contrôlée 3s. Exercice de force — frais en début de séance.</div>
+      <div class="exo-prog">Toutes reps OK → +2,5 kg à la prochaine séance</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Développé incliné haltères</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Inclinaison 30-45°, amplitude complète, coudes à 75°. Cible la partie haute des pecs.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Développé épaules haltères</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Priorité n°1. Pousser vers le haut sans verrouiller les coudes. En haltères pour une meilleure amplitude.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Élévations latérales</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">4×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Priorité absolue pour la silhouette. Bras légèrement fléchis, monter jusqu'à l'horizontale, mouvement lent. Commencer léger (8-10 kg).</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Dips lestés</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Se pencher légèrement en avant pour cibler les pecs. Descente complète. Lester progressivement.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Extension triceps poulie haute</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Bras collés au corps, extension complète, contraction 1s en bas. Cible le long faisceau du triceps.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+  </div>
+
+  <!-- MARDI -->
+  <div class="day-content" id="day-1">
+    <div class="day-header-card" style="background:linear-gradient(135deg,#0a1a2820,#3b9eff15);border:1px solid #3b9eff30;">
+      <div><div class="day-name-big" style="color:#3b9eff">Mardi</div><div class="day-type-big">Pull</div><div class="day-focus">Dos large · Trapèzes · Biceps</div></div>
+      <div class="day-number-badge">2</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Tractions lestées prise large</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge force">Force</span><span class="badge series">4×5-6</span><span class="badge repos">2 min repos</span></div>
+      <div class="exo-note">Prise en pronation large. Descente complète bras tendus, poitrine vers la barre. Meilleur exercice pour les lats.</div>
+      <div class="exo-prog">Toutes reps OK → +2,5 kg au lest</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Tirage vertical prise large pronation</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Coudes vers le bas et l'extérieur, descente jusqu'aux clavicules. Crée la largeur en V.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Tirage horizontal serré</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Dos droit, omoplates rapprochées en fin de mouvement. Travaille l'épaisseur du dos et la posture.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Pull-over poulie</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Bras tendus, arc de cercle complet. Sentir l'étirement des lats. Meilleur exercice d'isolation pour la largeur.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Curl incliné haltères</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Position inclinée 45°, bras derrière le corps, supination complète. Développe le pic du biceps.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Curl marteau</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Poignets neutres tout au long. Développe le brachial et les avant-bras. Complémentaire du curl incliné.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+  </div>
+
+  <!-- MERCREDI -->
+  <div class="day-content" id="day-2">
+    <div class="day-header-card" style="background:linear-gradient(135deg,#0a1a0a20,#22dd8815);border:1px solid #22dd8830;">
+      <div><div class="day-name-big" style="color:#22dd88">Mercredi</div><div class="day-type-big">Legs lourd</div><div class="day-focus">Quadriceps · Ischios · Fessiers</div></div>
+      <div class="day-number-badge">3</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Deadlift</div></div>
+      <div class="exo-meta"><span class="badge force">Force</span><span class="badge series">4×5</span><span class="badge repos">2 min repos</span></div>
+      <div class="exo-note">Dos neutre, barre proche du corps, pousser le sol vers le bas. Exercice roi — toute la chaîne postérieure.</div>
+      <div class="exo-prog">Toutes reps OK → +2,5 kg à la prochaine séance</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Presse à cuisses</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Pieds à largeur d'épaules, descendre jusqu'à 90°. Ne pas verrouiller les genoux en haut.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Leg curl couché</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Couché = étirement complet des ischios. Contraction maximale en haut. Rééquilibre les jambes quad-dominantes.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Hip thrust machine</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Extension complète de la hanche, contracter les fessiers 1s en haut. Meilleur exercice fessiers.</div>
+      <div class="exo-prog">3×15 OK → +5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Leg extension</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Extension complète, contraction 1s en haut, descente lente 3s. Cible le vaste médial.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Abducteurs / Adducteurs</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Amplitude complète, mouvement lent et contrôlé. 15 reps — ces muscles répondent mal au lourd.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+  </div>
+
+  <!-- JEUDI REPOS -->
+  <div class="day-content" id="day-3">
+    <div style="padding: 16px 16px 0;">
+    <div class="rest-day">
+      <div class="rest-icon">💤</div>
+      <div class="rest-title">Jeudi · Repos</div>
+      <div class="rest-desc">Récupération active recommandée.<br><br>Marche, stretching, mobilité — tout ce qui n'élève pas la fréquence cardiaque. C'est ici que le muscle se construit vraiment.<br><br>Éviter tout cardio intense.</div>
+    </div>
+    </div>
+  </div>
+
+  <!-- VENDREDI -->
+  <div class="day-content" id="day-4">
+    <div class="day-header-card" style="background:linear-gradient(135deg,#1a0a2820,#a855f715);border:1px solid #a855f730;">
+      <div><div class="day-name-big" style="color:#a855f7">Vendredi</div><div class="day-type-big">Upper</div><div class="day-focus">Push + Pull · Fréquence 2</div></div>
+      <div class="day-number-badge">5</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Bench incliné Smith</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Barre descend vers la partie haute des pecs, coudes à 75°. Fréquence 2 — volume modéré.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Tirage vertical prise neutre</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Prise face à face, coudes vers le bas. Angle différent du mardi — travaille rhomboïdes et trapèzes.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Élévations latérales</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">4×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">2e séance de la semaine. Ne jamais sauter. Même protocole que lundi — le deltoïde latéral récupère vite.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Oiseau haltères</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Buste penché 45°, bras légèrement fléchis, écarter comme des ailes. Deltoïde postérieur — épaisseur de profil.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Barre au front</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Coudes fixes pointés vers le plafond, barre vers le front pas le cou. Long faisceau triceps.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Curl incliné haltères</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">2e séance biceps. Même protocole que mardi. Le meilleur exercice pour le pic du biceps.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+  </div>
+
+  <!-- SAMEDI -->
+  <div class="day-content" id="day-5">
+    <div class="day-header-card" style="background:linear-gradient(135deg,#0a1a0520,#aadd5515);border:1px solid #aadd5530;">
+      <div><div class="day-name-big" style="color:#aadd55">Samedi</div><div class="day-type-big">Legs léger</div><div class="day-focus">Ischios · Fessiers · Mollets</div></div>
+      <div class="day-number-badge">6</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Squat ou presse modérée</div></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Charges modérées, profondeur complète, genoux dans l'axe des pieds. Fréquence 2 — pas d'effort maximal.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +5 kg</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Soulevé roumain haltères</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge hyp">Hypertrophie</span><span class="badge series">3×10-12</span><span class="badge repos">75 sec repos</span></div>
+      <div class="exo-note">Dos droit, descendre jusqu'à sentir l'étirement des ischios, hanches en arrière. Exercice clé pour rééquilibrer les jambes.</div>
+      <div class="exo-prog">Double progression : 3×10 → 3×12 → +2,5 kg</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Hip thrust machine</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">2e séance fessiers. Extension complète, contraction 1s en haut. Fessiers en retrait = 2 stimulations par semaine.</div>
+      <div class="exo-prog">3×15 OK → +5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card">
+      <div class="exo-top"><div class="exo-name">Leg curl couché</div></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">3×12-15</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Plus léger que mercredi. Focus sur la contraction en haut. Finition ischios.</div>
+      <div class="exo-prog">3×15 OK → +2,5 kg. Progression toutes 2-3 semaines</div>
+    </div>
+    <div class="exo-card priority">
+      <div class="exo-top"><div class="exo-name">Mollets à la presse</div><span class="priority-star">★</span></div>
+      <div class="exo-meta"><span class="badge iso">Isolation</span><span class="badge series">4×15-20</span><span class="badge repos">60 sec repos</span></div>
+      <div class="exo-note">Amplitude complète — descente maximale + montée maximale. Lent. 15-20 reps car muscle très dense.</div>
+      <div class="exo-prog">4×20 OK → +5 kg. Muscle récalcitrant — patient</div>
+    </div>
+  </div>
+
+  <!-- DIMANCHE REPOS -->
+  <div class="day-content" id="day-6">
+    <div style="padding: 16px 16px 0;">
+    <div class="rest-day">
+      <div class="rest-icon">🌙</div>
+      <div class="rest-title">Dimanche · Repos complet</div>
+      <div class="rest-desc">Aucune séance, même légère.<br><br>C'est obligatoire. Le dimanche est le jour où ton corps consolide les gains de la semaine. Même la marche doit rester tranquille.<br><br>Mange bien, dors bien.</div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE PROGRESSION -->
+<div class="page" id="page-progression">
+  <div class="section-title">Règles de progression</div>
+
+  <div class="prog-card" style="border-color:#ff553330;">
+    <div class="prog-card-title" style="color:var(--force)">Force · 4×5</div>
+    <div class="prog-row"><span class="prog-label">Repos</span><span class="prog-val">2 minutes entre les séries</span></div>
+    <div class="prog-row"><span class="prog-label">Quand +</span><span class="prog-val">Toutes les répétitions réussies proprement</span></div>
+    <div class="prog-row"><span class="prog-label">Combien</span><span class="prog-val">+2,5 kg à la séance suivante</span></div>
+    <div class="prog-row"><span class="prog-label">Attention</span><span class="prog-val">Ne pas augmenter si une rep est ratée ou sale</span></div>
+  </div>
+
+  <div class="prog-card" style="border-color:#3b9eff30;">
+    <div class="prog-card-title" style="color:var(--hyp)">Hypertrophie · 3×10-12</div>
+    <div class="prog-row"><span class="prog-label">Repos</span><span class="prog-val">75 secondes entre les séries</span></div>
+    <div class="prog-row"><span class="prog-label">Principe</span><span class="prog-val">Double progression</span></div>
+    <div class="prog-row"><span class="prog-label">Comment</span><span class="prog-val">Commencer à 3×10 → viser 3×12 → +2,5 kg → retour à 3×10</span></div>
+    <div class="prog-row"><span class="prog-label">Fréquence</span><span class="prog-val">Peut progresser chaque semaine si bien récupéré</span></div>
+  </div>
+
+  <div class="prog-card" style="border-color:#a855f730;">
+    <div class="prog-card-title" style="color:var(--iso)">Isolation · 3×12-15</div>
+    <div class="prog-row"><span class="prog-label">Repos</span><span class="prog-val">60 secondes entre les séries</span></div>
+    <div class="prog-row"><span class="prog-label">Comment</span><span class="prog-val">3×15 réussies → +2,5 kg → retour à 3×12</span></div>
+    <div class="prog-row"><span class="prog-label">Fréquence</span><span class="prog-val">Toutes les 2-3 semaines, c'est normal</span></div>
+    <div class="prog-row"><span class="prog-label">Attention</span><span class="prog-val">Technique avant la charge sur ces exercices</span></div>
+  </div>
+
+  <div class="section-title">Priorités morphologiques</div>
+
+  <div class="priority-card"><div class="priority-rank">1</div><div class="priority-info"><div class="priority-name">Épaules · Deltoïde latéral</div><div class="priority-why">Quasi absent sur les photos. Impact maximal sur la silhouette et le ratio taille/épaules.</div><div class="priority-sol">→ Élévations latérales 2×/semaine (lun + ven)</div></div></div>
+  <div class="priority-card"><div class="priority-rank">2</div><div class="priority-info"><div class="priority-name">Lats · Grand dorsal</div><div class="priority-why">Dos plat et étroit. Manque de largeur et d'effet en V visible de dos.</div><div class="priority-sol">→ Tractions prise large + tirage large + pull-over</div></div></div>
+  <div class="priority-card"><div class="priority-rank">3</div><div class="priority-info"><div class="priority-name">Triceps</div><div class="priority-why">En retrait vs biceps. Représente 2/3 du volume total du bras.</div><div class="priority-sol">→ Dips lestés + extension poulie + barre au front</div></div></div>
+  <div class="priority-card"><div class="priority-rank">4</div><div class="priority-info"><div class="priority-name">Ischios · Fessiers</div><div class="priority-why">Jambes quad-dominantes. Déséquilibre visible de dos et de profil.</div><div class="priority-sol">→ Leg curl couché + soulevé roumain 2×/semaine</div></div></div>
+  <div class="priority-card"><div class="priority-rank">5</div><div class="priority-info"><div class="priority-name">Mollets</div><div class="priority-why">Absents du programme actuel. Peu développés sur les photos.</div><div class="priority-sol">→ Mollets à la presse 4×15-20 le samedi</div></div></div>
+
+  <div class="section-title">Photos de suivi</div>
+  <div class="prog-card">
+    <div class="prog-card-title">Envoyer des photos</div>
+    <div class="prog-row"><span class="prog-label">Fréquence</span><span class="prog-val">Toutes les 4 semaines</span></div>
+    <div class="prog-row"><span class="prog-label">Poses</span><span class="prog-val">Face, dos, profil gauche, profil droit</span></div>
+    <div class="prog-row"><span class="prog-label">Conditions</span><span class="prog-val">Même lumière, même heure, même endroit</span></div>
+    <div class="prog-row"><span class="prog-label">Objectif</span><span class="prog-val">Vérifier les déséquilibres et ajuster le programme</span></div>
+  </div>
+</div>
+
+<!-- PAGE SUIVI -->
+<div class="page" id="page-suivi">
+  <div class="section-title" style="padding-top:12px;">Remplis tes charges chaque semaine</div>
+
+  <div id="suivi-content"></div>
+</div>
+
+<!-- TIMER FAB -->
+<button class="timer-fab" id="timerFab" onclick="toggleTimer()">
+  <span class="timer-display" id="fabDisplay">▶</span>
+  <span class="timer-label">REPOS</span>
+</button>
+
+<!-- TIMER PANEL -->
+<div class="timer-panel" id="timerPanel">
+  <button class="timer-close" onclick="toggleTimer()">✕</button>
+  <div class="timer-panel-title">Minuteur de repos</div>
+  <div class="timer-big" id="timerDisplay">01:15</div>
+  <div class="timer-presets">
+    <button class="preset-btn" onclick="setTimer(60)">1 min</button>
+    <button class="preset-btn" onclick="setTimer(75)">1:15</button>
+    <button class="preset-btn" onclick="setTimer(90)">1:30</button>
+    <button class="preset-btn" onclick="setTimer(120)">2 min</button>
+  </div>
+  <div class="timer-controls">
+    <button class="timer-btn start" id="startBtn" onclick="toggleRun()">Démarrer</button>
+    <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+  </div>
+</div>
+
+<script>
+// NAVIGATION
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function showDay(i) {
+  document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.day-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('day-' + i).classList.add('active');
+  document.getElementById('daybtn-' + i).classList.add('active');
+}
+
+// SUIVI
+const suiviData = [
+  { day: 'Lundi · Push', exos: [
+    { name: 'Bench press', series: '4×5' },
+    { name: 'Développé incliné haltères', series: '3×10-12' },
+    { name: 'Développé épaules haltères ★', series: '3×10-12' },
+    { name: 'Élévations latérales ★', series: '4×12-15' },
+    { name: 'Dips lestés', series: '3×10-12' },
+    { name: 'Extension triceps poulie', series: '3×12-15' },
+  ]},
+  { day: 'Mardi · Pull', exos: [
+    { name: 'Tractions lestées prise large ★', series: '4×5-6' },
+    { name: 'Tirage vertical large pronation ★', series: '3×10-12' },
+    { name: 'Tirage horizontal serré', series: '3×10-12' },
+    { name: 'Pull-over poulie ★', series: '3×12-15' },
+    { name: 'Curl incliné haltères', series: '3×10-12' },
+    { name: 'Curl marteau', series: '3×12-15' },
+  ]},
+  { day: 'Mercredi · Legs lourd', exos: [
+    { name: 'Deadlift', series: '4×5' },
+    { name: 'Presse à cuisses', series: '3×10-12' },
+    { name: 'Leg curl couché ★', series: '3×10-12' },
+    { name: 'Hip thrust machine', series: '3×12-15' },
+    { name: 'Leg extension', series: '3×12-15' },
+    { name: 'Abducteurs / Adducteurs', series: '3×15' },
+  ]},
+  { day: 'Vendredi · Upper', exos: [
+    { name: 'Bench incliné Smith', series: '3×10-12' },
+    { name: 'Tirage vertical prise neutre', series: '3×10-12' },
+    { name: 'Élévations latérales ★', series: '4×12-15' },
+    { name: 'Oiseau haltères ★', series: '3×12-15' },
+    { name: 'Barre au front', series: '3×10-12' },
+    { name: 'Curl incliné haltères', series: '3×10-12' },
+  ]},
+  { day: 'Samedi · Legs léger', exos: [
+    { name: 'Squat / presse modérée', series: '3×10-12' },
+    { name: 'Soulevé roumain haltères ★', series: '3×10-12' },
+    { name: 'Hip thrust machine', series: '3×12-15' },
+    { name: 'Leg curl couché', series: '3×12-15' },
+    { name: 'Mollets à la presse ★', series: '4×15-20' },
+  ]},
+];
+
+function buildSuivi() {
+  const saved = JSON.parse(localStorage.getItem('suivi') || '{}');
+  let html = '';
+  suiviData.forEach((block, bi) => {
+    html += `<div class="day-section-label">${block.day}</div>`;
+    block.exos.forEach((exo, ei) => {
+      html += `<div class="suivi-exo"><div class="suivi-exo-header"><span class="suivi-exo-name">${exo.name}</span><span class="suivi-exo-series">${exo.series}</span></div><div class="suivi-weeks">`;
+      for (let w = 1; w <= 8; w++) {
+        const key = `${bi}-${ei}-${w}`;
+        const val = saved[key] || '';
+        html += `<div class="week-input-wrap"><div class="week-label">S${w}</div><input class="week-input" type="number" inputmode="decimal" placeholder="—" value="${val}" onchange="saveVal('${key}',this.value)"></div>`;
+      }
+      html += `</div></div>`;
+    });
+  });
+  document.getElementById('suivi-content').innerHTML = html;
+}
+
+function saveVal(key, val) {
+  const saved = JSON.parse(localStorage.getItem('suivi') || '{}');
+  if (val) saved[key] = val; else delete saved[key];
+  localStorage.setItem('suivi', JSON.stringify(saved));
+}
+
+buildSuivi();
+
+// TIMER
+let timerSecs = 75, remaining = 75, interval = null, running = false;
+
+function setTimer(s) {
+  clearInterval(interval); running = false;
+  timerSecs = s; remaining = s;
+  updateTimerDisplay();
+  document.getElementById('startBtn').textContent = 'Démarrer';
+  document.getElementById('timerDisplay').className = 'timer-big';
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  const txt = m + ':' + String(s).padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = txt;
+  document.getElementById('fabDisplay').textContent = running ? txt : '▶';
+}
+
+function toggleRun() {
+  if (running) {
+    clearInterval(interval); running = false;
+    document.getElementById('startBtn').textContent = 'Reprendre';
+  } else {
+    if (remaining <= 0) { remaining = timerSecs; }
+    running = true;
+    document.getElementById('startBtn').textContent = 'Pause';
+    document.getElementById('timerDisplay').className = 'timer-big running';
+    interval = setInterval(() => {
+      remaining--;
+      updateTimerDisplay();
+      if (remaining <= 0) {
+        clearInterval(interval); running = false;
+        document.getElementById('timerDisplay').className = 'timer-big done';
+        document.getElementById('timerDisplay').textContent = 'GO !';
+        document.getElementById('fabDisplay').textContent = '✓';
+        document.getElementById('startBtn').textContent = 'Démarrer';
+        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(interval); running = false;
+  remaining = timerSecs;
+  updateTimerDisplay();
+  document.getElementById('startBtn').textContent = 'Démarrer';
+  document.getElementById('timerDisplay').className = 'timer-big';
+}
+
+function toggleTimer() {
+  const p = document.getElementById('timerPanel');
+  p.classList.toggle('open');
+}
+
+updateTimerDisplay();
+</script>
+</body>
+</html>
